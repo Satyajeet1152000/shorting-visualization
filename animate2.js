@@ -67,11 +67,12 @@ export function animationIntialization(arr, n) {
     animationDisplay(animationContainerArray);
 }
 
-function animationDisplay(animationContainerArray) {
-    animationContainerArray.forEach((levelContainer) => {
+async function animationDisplay(animationContainerArray) {
+    for (const levelContainer of animationContainerArray) {
         animationContainer.appendChild(levelContainer);
         console.log(levelContainer);
-    });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
 }
 
 function getNumDiv(arr, low, high) {

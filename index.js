@@ -1,5 +1,5 @@
-import { animationIntialization } from "./animate.js";
-// import { animationIntialization } from "./animate2.js";
+// import { animationIntialization } from "./animate.js";
+import { animationIntialization } from "./animate2.js";
 
 let ml = 0;
 let mergeLevels = {};

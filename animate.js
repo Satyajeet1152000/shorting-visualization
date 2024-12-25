@@ -1,6 +1,7 @@
-const animationContainer = document.getElementById("animation-container");
+let animationContainerArray = [];
 
-export function animationIntialization(arr, n) {
+export async function animationIntialization(arr, n) {
+    animationContainerArray = [];
     arr = arr.map((a, i) => {
         const divNumBox = document.createElement("div");
         divNumBox.classList.add("div-num-box");
@@ -11,7 +12,7 @@ export function animationIntialization(arr, n) {
         return divNumBox;
     });
 
-    displayDividedArray(arr, 0, arr.length - 1, 1);
+    displayDividedArray(arr, 0, arr.length - 1, 0);
 
     function merge(arr, low, mid, high, l) {
         let x = low,
@@ -19,7 +20,7 @@ export function animationIntialization(arr, n) {
 
         let temp = [];
 
-        // compaire and push element in ascending order from both array
+        // Compare and push elements in ascending order from both arrays
         while (x <= mid && y <= high) {
             if (arr[x].value <= arr[y].value) {
                 temp.push(arr[x++]);
@@ -28,7 +29,7 @@ export function animationIntialization(arr, n) {
             }
         }
 
-        // push left over element into the array
+        // Push leftover elements into the array
         while (x <= mid) {
             temp.push(arr[x++]);
         }
@@ -36,7 +37,7 @@ export function animationIntialization(arr, n) {
             temp.push(arr[y++]);
         }
 
-        // update original array
+        // Update original array
         for (let i = 0; i < temp.length; i++) {
             arr[low + i] = temp[i];
         }
@@ -46,7 +47,6 @@ export function animationIntialization(arr, n) {
 
     function mergeSort(arr, low, high, level) {
         if (low < high) {
-            // level++;
             let mid = Math.floor((low + high) / 2);
 
             displayDividedArray(arr, low, mid, level);
@@ -59,12 +59,27 @@ export function animationIntialization(arr, n) {
             displayMergedArray(arr, low, high, level);
         }
     }
-    mergeSort(arr, 0, arr.length - 1, 2);
+    mergeSort(arr, 0, arr.length - 1, 1);
+
+    // Append all elements in animationContainerArray to animationContainer
+
+    await animationDisplay(animationContainerArray);
 }
 
-function getNumDiv(arr, low, high) {
+async function animationDisplay(animationContainerArray) {
+    const animationContainer = document.getElementById("animation-container");
+    animationContainer.innerHTML = "";
+    for (const levelContainer of animationContainerArray) {
+        animationContainer.appendChild(levelContainer);
+        console.log(levelContainer);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+}
+
+function getNumDiv(arr, low, high, type) {
     const NumDivs = document.createElement("div");
     NumDivs.classList.add("num-box-container");
+    NumDivs.dataset.type = type ? true : false;
 
     let divs = arr.slice(low, high + 1);
     divs.forEach((div) => {
@@ -84,22 +99,19 @@ function newLevelContainer(level, type = "divided") {
 function displayDividedArray(arr, low, high, level) {
     const NumDivs = getNumDiv(arr, low, high);
 
-    // console.log(level);
-    // console.log(arr[low].value, "left", level);
-    let lvctNodes = animationContainer.querySelectorAll(".level-container");
+    let lvctNodes = animationContainerArray;
 
-    let levelIndex = Array.from(lvctNodes).findIndex(
-        (node) => node.dataset.level == level
+    let levelIndex = lvctNodes.findIndex(
+        (node) => node.dataset.level == level && node.dataset.type === "divided"
     );
-    // if level is exist then append the num divs to the level container
-    if (levelIndex == -1) {
-        const levelContainer = newLevelContainer(level);
-        // levelContainer.textContent = `Level ${level}`;
 
+    if (levelIndex === -1) {
+        const levelContainer = newLevelContainer(level);
         levelContainer.appendChild(NumDivs.cloneNode(true));
-        animationContainer.appendChild(levelContainer);
+        animationContainerArray.push(levelContainer);
     } else {
         lvctNodes[levelIndex].appendChild(NumDivs.cloneNode(true));
+
         while (
             lvctNodes[++levelIndex] &&
             low - high == 0
@@ -112,63 +124,27 @@ function displayDividedArray(arr, low, high, level) {
 }
 
 function displayMergedArray(arr, low, high, level) {
-    let lvctNodes = animationContainer.querySelectorAll(
-        ".level-container:not([data-type='divided'])"
+    let lvctNodes = animationContainerArray.filter(
+        (node) => node.dataset.type !== "divided"
     );
 
-    const NumDivs = getNumDiv(arr, low, high);
-    NumDivs.dataset.merging = "true";
+    const NumDivs = getNumDiv(arr, low, high, "merged");
 
-    let levelIndex = Array.from(lvctNodes).findIndex(
-        (node) => node.dataset.level == level
+    let levelIndex = lvctNodes.findIndex(
+        (node) => node.dataset.level == level && node.dataset.type === "merged"
     );
 
-    if (levelIndex == -1) {
+    if (levelIndex === -1) {
         const levelContainer = newLevelContainer(level, "merged");
         levelContainer.appendChild(NumDivs.cloneNode(true));
-        animationContainer.appendChild(levelContainer);
+        animationContainerArray.push(levelContainer);
     } else {
-        const oldContainer = lvctNodes[levelIndex].lastChild;
-        const newContainer = NumDivs.cloneNode(true);
+        while (low++ <= high) {
+            // console.log(low);
+            lvctNodes[levelIndex].removeChild(lvctNodes[levelIndex].lastChild);
 
-        const oldBoxes = Array.from(oldContainer.children);
-        const newBoxes = Array.from(newContainer.children);
-
-        oldBoxes.forEach((box, i) => {
-            const rect = box.getBoundingClientRect();
-            box.style.transform = `translateX(${rect.left}px)`;
-        });
-
-        lvctNodes[levelIndex].removeChild(oldContainer);
-        lvctNodes[levelIndex].appendChild(newContainer);
-
-        requestAnimationFrame(() => {
-            newBoxes.forEach((box, i) => {
-                const rect = box.getBoundingClientRect();
-                box.style.transform = `translateX(0)`;
-            });
-        });
+            // lvctNodes[levelIndex].removeChild(lvctNodes[levelIndex].lastChild);
+        }
+        lvctNodes[levelIndex].appendChild(NumDivs.cloneNode(true));
     }
 }
-// export function animateMergeSort(arr, low, high, dir = "left") {
-//     console.log(low, high, arr.slice(low, high + 1));
-
-// const divNumBoxesContainer = document.createElement("div");
-// divNumBoxesContainer.classList.add("div-num-boxes-container");
-
-// const leftDiv = document.createElement("div");
-// leftDiv.classList.add("left");
-
-// const rightDiv = document.createElement("div");
-// rightDiv.classList.add("right");
-
-//     for (let i = low; i <= high; i++) {
-//         // console.log(arr[i])
-//         leftDiv.innerHTML += divNumBoxes[i].value;
-//     }
-
-//     divNumBoxesContainer.appendChild(leftDiv);
-//     divNumBoxesContainer.appendChild(rightDiv);
-
-//     animationContainer.appendChild(divNumBoxesContainer);
-// }

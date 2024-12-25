@@ -75,9 +75,10 @@ async function animationDisplay(animationContainerArray) {
     }
 }
 
-function getNumDiv(arr, low, high) {
+function getNumDiv(arr, low, high, type) {
     const NumDivs = document.createElement("div");
     NumDivs.classList.add("num-box-container");
+    NumDivs.dataset.type = type ? true : false;
 
     let divs = arr.slice(low, high + 1);
     divs.forEach((div) => {
@@ -126,7 +127,7 @@ function displayMergedArray(arr, low, high, level) {
         (node) => node.dataset.type !== "divided"
     );
 
-    const NumDivs = getNumDiv(arr, low, high);
+    const NumDivs = getNumDiv(arr, low, high, "merged");
 
     let levelIndex = lvctNodes.findIndex(
         (node) => node.dataset.level == level && node.dataset.type === "merged"

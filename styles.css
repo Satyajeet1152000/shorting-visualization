@@ -36,32 +36,62 @@ body {
     align-items: center;
 }
 
-.num-box-container {
-    display: flex;
-    border: 3px solid #ff45b8;
-}
-
 .level-container {
     /* border: 2px solid rgb(0, 255, 34); */
     padding: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: fit-content;
     gap: 1rem;
-    width: 100%;
-
-    animation: opacityFade 1s ease-in;
-    /* width: fit-content; */
 }
-@keyframes opacityFade {
+
+.level-container[data-type="divided"] {
+    gap: 1rem;
+    animation: divideAnimation 1s ease-in;
+}
+@keyframes divideAnimation {
     0% {
-        opacity: 0;
         gap: 0;
+        opacity: 0;
     }
     50% {
+        gap: 1rem;
         opacity: 1;
     }
     100% {
         gap: 1rem;
+        opacity: 1;
+    }
+}
+
+.level-container[data-type="merged"] {
+    gap: 1rem;
+    animation: OpacityAnimation 0.8s ease-in;
+}
+@keyframes OpacityAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.num-box-container {
+    display: flex;
+    /* gap: 1rem; */
+}
+
+.num-box-container[data-type="true"] {
+    gap: 0;
+    animation: mergeAnimation 0.8s ease-in;
+}
+@keyframes mergeAnimation {
+    0% {
+        gap: 1rem;
+    }
+    100% {
+        gap: 0;
     }
 }

@@ -117,7 +117,7 @@ function displayMergedArray(arr, low, high, level) {
     );
 
     const NumDivs = getNumDiv(arr, low, high);
-    // console.log(NumDivs);
+    NumDivs.dataset.merging = "true";
 
     let levelIndex = Array.from(lvctNodes).findIndex(
         (node) => node.dataset.level == level
@@ -125,22 +125,29 @@ function displayMergedArray(arr, low, high, level) {
 
     if (levelIndex == -1) {
         const levelContainer = newLevelContainer(level, "merged");
-        // levelContainer.textContent = `Level ${level}`;
         levelContainer.appendChild(NumDivs.cloneNode(true));
         animationContainer.appendChild(levelContainer);
     } else {
-        // console.log(low, high, level);
-        // console.log("", arr[low].value, "-", arr[high].value);
+        const oldContainer = lvctNodes[levelIndex].lastChild;
+        const newContainer = NumDivs.cloneNode(true);
 
-        // console.log(lvctNodes[levelIndex].children.length);
+        const oldBoxes = Array.from(oldContainer.children);
+        const newBoxes = Array.from(newContainer.children);
 
-        while (low++ <= high) {
-            console.log(low);
-            lvctNodes[levelIndex].removeChild(lvctNodes[levelIndex].lastChild);
+        oldBoxes.forEach((box, i) => {
+            const rect = box.getBoundingClientRect();
+            box.style.transform = `translateX(${rect.left}px)`;
+        });
 
-            // lvctNodes[levelIndex].removeChild(lvctNodes[levelIndex].lastChild);
-        }
-        lvctNodes[levelIndex].appendChild(NumDivs.cloneNode(true));
+        lvctNodes[levelIndex].removeChild(oldContainer);
+        lvctNodes[levelIndex].appendChild(newContainer);
+
+        requestAnimationFrame(() => {
+            newBoxes.forEach((box, i) => {
+                const rect = box.getBoundingClientRect();
+                box.style.transform = `translateX(0)`;
+            });
+        });
     }
 }
 // export function animateMergeSort(arr, low, high, dir = "left") {

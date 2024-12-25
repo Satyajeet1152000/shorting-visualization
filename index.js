@@ -55,7 +55,7 @@ function mergeSort(arr, low, high, l) {
     }
 }
 
-const arr = [23, 12, 32, 56, 25, 67, 3, 69, 78, 34];
+const arr = [23, 12, 32, 56, 25, 67, 3, 69, 78, 34, 9];
 // const arr = [34, 67, 3, 41, 23, 6];
 // mergeSort(arr, 0, arr.length - 1, 0);
 // console.log(levels);

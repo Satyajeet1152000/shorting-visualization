@@ -42,13 +42,26 @@ body {
 }
 
 .level-container {
-    border: 2px solid rgb(0, 255, 34);
+    /* border: 2px solid rgb(0, 255, 34); */
     padding: 0.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 1rem;
-
     width: 100%;
+
+    animation: opacityFade 1s ease-in;
     /* width: fit-content; */
+}
+@keyframes opacityFade {
+    0% {
+        opacity: 0;
+        gap: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        gap: 1rem;
+    }
 }
